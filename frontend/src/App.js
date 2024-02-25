@@ -10,7 +10,7 @@ function App() {
     const ws = new WebSocket("ws://192.168.1.168/ws");
 
     ws.onopen = () => {
-      console.log("Connected to ESP32!");
+      console.log("Connected to ESP32!!");
     };
 
     ws.onmessage = (event) => {
