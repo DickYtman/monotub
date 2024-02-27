@@ -182,30 +182,15 @@ void setup()
     lcdHandler.print("BME280 not found!", 0);
   }
 
-  if (!SPIFFS.begin(true))
-  {
-    Serial.println("An Error has occurred while mounting SPIFFS");
-    return;
-  }
-
   ws.onEvent(onWsEvent);
   server.addHandler(&ws);
 
-  server.on("/", HTTP_GET, [](AsyncWebServerRequest *request)
-            {
-              Serial.println("Requesting index page...");
+  // server.on("/", HTTP_GET, [](AsyncWebServerRequest *request)
+  //           {
+  //             Serial.println("Requesting index page...");
 
-              request->send(SPIFFS, "/index.html", "text/html"); });
+  //             request->send(SPIFFS, "/index.html", "text/html"); });
 
-  server.on("/css/style.css", HTTP_GET, [](AsyncWebServerRequest *request)
-            { 
-              Serial.println("Requesting style css...");
-              request->send(SPIFFS, "/css/style.css", "text/css"); });
-
-  server.on("/script/socket.js", HTTP_GET, [](AsyncWebServerRequest *request)
-            { 
-              Serial.println("Requesting socket js...");
-              request->send(SPIFFS, "/script/socket.js", "text/javascript"); });
 
   server.onNotFound(notFound);
 
@@ -339,6 +324,6 @@ void loop()
 
   Serial.println(getSensorReadings());
 
-  // delay(500);
+  delay(30);
 }
 
