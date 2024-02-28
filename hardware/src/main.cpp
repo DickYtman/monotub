@@ -11,6 +11,8 @@
 #include <ESPAsyncWebServer.h>
 #include "SPIFFS.h"
 #include <Arduino_JSON.h>
+#include <HTTPClient.h>
+
 
 #define PWM_PIN 18          // pwm HEATER
 #define CONTROL_PIN 19      // pwm FAN
