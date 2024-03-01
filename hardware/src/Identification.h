@@ -41,23 +41,6 @@ void otaInit(const char *ssid, const char *password) {
     Serial.print("IP Address: ");
     Serial.println(WiFi.localIP());
   }
-// server.on("/", HTTP_GET, [](AsyncWebServerRequest *request) {
-//   request->send(200, "text/html", R"(
-//       <!DOCTYPE HTML>
-//       <html>
-//       <head><title>)" + String(projectTitle) + R"(</title></head>
-//       <body style='font-size:1.1em;'>
-//         <h3>Arduino ESP OTA Home Page</h3>
-//         ...
-//         <p> To update your code type this into your address bar:<br />
-//           <a href='http://)" + String((char *)(WiFi.localIP()).toString().c_str()) + R"(/update' target='_blank'>http://)" + String((char *)(WiFi.localIP()).toString().c_str()) + R"(/update</a> <br />
-//           or just click this link.
-//         </p>
-//       </body>
-//       </html>
-//   )");
-// });
-
 
   AsyncElegantOTA.begin(&server);
   server.begin();

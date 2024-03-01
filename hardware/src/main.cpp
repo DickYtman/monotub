@@ -13,7 +13,6 @@
 #include <Arduino_JSON.h>
 #include <HTTPClient.h>
 
-
 #define PWM_PIN 18          // pwm HEATER
 #define CONTROL_PIN 19      // pwm FAN
 #define CONTROL_DELAY 60000 // Delay time in milliseconds (1 minute)
@@ -73,6 +72,34 @@ String getSensorReadings()
   readings["humidity"] = String(bmeHandler.readHumidity());
   String jsonString = JSON.stringify(readings);
   return jsonString;
+}
+
+void sendDataToServer(float temperature, float humidity)
+{
+  Serial.println("Sending data to server...");
+  HTTPClient http;
+  http.begin("http://192.168.1.168:5000/api/readings"); // Replace with your Flask server IP and port
+  http.addHeader("Content-Type", "application/json");
+
+  JSONVar readings;
+  readings["temperature"] = temperature;
+  readings["humidity"] = humidity;
+  String requestBody = JSON.stringify(readings);
+
+  int httpResponseCode = http.POST(requestBody);
+  if (httpResponseCode > 0)
+  {
+    String response = http.getString();
+    Serial.println(httpResponseCode);
+    Serial.println(response);
+  }
+  else
+  {
+    Serial.print("Error on sending POST: ");
+    Serial.println(httpResponseCode);
+  }
+
+  http.end();
 }
 
 void onWsEvent(AsyncWebSocket *server, AsyncWebSocketClient *client, AwsEventType type, void *arg, uint8_t *data, size_t len)
@@ -187,13 +214,6 @@ void setup()
   ws.onEvent(onWsEvent);
   server.addHandler(&ws);
 
-  // server.on("/", HTTP_GET, [](AsyncWebServerRequest *request)
-  //           {
-  //             Serial.println("Requesting index page...");
-
-  //             request->send(SPIFFS, "/index.html", "text/html"); });
-
-
   server.onNotFound(notFound);
 
   // Start server
@@ -214,6 +234,9 @@ int readMoisturePercentage()
 unsigned long lastSendTime = 0;
 const long sendInterval = 5000; // Send data every 5 seconds
 
+unsigned long previousMillis = 0;
+const long interval = 60000; // Interval at which to send data (1 minute)
+
 void broadcastSensorReadings()
 {
   String sensorData = getSensorReadings(); // Use your existing function
@@ -222,6 +245,7 @@ void broadcastSensorReadings()
 
 void loop()
 {
+  unsigned long currentMillis = millis();
 
   AsyncElegantOTA.loop();
 
@@ -232,6 +256,16 @@ void loop()
   String humidityMessage = "Humidity: " + String(humidity) + "%";
   lcdHandler.print(tempMessage, 0);
   lcdHandler.print(humidityMessage, 1);
+
+  if (currentMillis - previousMillis >= interval)
+  {
+    previousMillis = currentMillis;
+    // Replace these with actual readings from your sensors
+    float temperature = bmeHandler.readTemperature();
+    float humidity = bmeHandler.readHumidity();
+
+    sendDataToServer(temperature, humidity);
+  }
 
   // If button is pressed
   if (digitalRead(BUTTON_PIN) == HIGH)
@@ -324,8 +358,7 @@ void loop()
     broadcastSensorReadings();
   }
 
-  Serial.println(getSensorReadings());
+  // Serial.println(getSensorReadings());
 
   delay(30);
 }
-
