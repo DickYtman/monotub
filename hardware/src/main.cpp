@@ -78,7 +78,7 @@ void sendDataToServer(float temperature, float humidity)
 {
   Serial.println("Sending data to server...");
   HTTPClient http;
-  http.begin("http://192.168.1.168:5000/api/readings"); // Replace with your Flask server IP and port
+  http.begin("http://192.168.1.235:5000/api/readings");
   http.addHeader("Content-Type", "application/json");
 
   JSONVar readings;

@@ -13,6 +13,7 @@ mysql = MySQL(app)
 
 @app.route('/api/readings', methods=['POST'])
 def post_readings():
+    print("hello")
     content = request.json
     temperature = content['temperature']
     humidity = content['humidity']
@@ -23,6 +24,12 @@ def post_readings():
     cur.close()
 
     return jsonify({"message": "Data stored successfully!"}), 201
+
+
+
+@app.route('/api/test', methods=['GET'])
+def test_connection():
+    return jsonify({"message": "Connection has been successfully established."}), 200
 
 if __name__ == '__main__':
     app.run(debug=True, host='0.0.0.0')
